@@ -5,6 +5,8 @@ from __future__ import print_function
 import re, sys, time
 from itertools import count
 from collections import OrderedDict, namedtuple
+import unittest
+from random import randint
 
 ###############################################################################
 # Piece-Square tables. Tune these to change sunfish's behaviour
@@ -88,7 +90,6 @@ initial = (
     '         \n'  # 100 -109
     '         \n'  # 110 -119
 )
-
 # Lists of possible moves for each piece type.
 N, E, S, W = -10, 1, 10, -1
 directions = {
@@ -437,7 +438,7 @@ def main():
             break
 
         # Fire up the engine to look for a move.
-        move, score = searcher.search(pos, secs=2)
+        move, score = searcher.search(pos, secs=1)
 
         if score == MATE_UPPER:
             print("Checkmate!")
@@ -448,6 +449,80 @@ def main():
         pos = pos.move(move)
 
 
+def piece_placement():
+    rook, bishop, knight, queen, king = 'r', 'b', 'n', 'q', 'k'
+    line = '.......'
+    complete = False
+    while complete is False:
+        result = line.split('.')
+        # Sets bishops on opposite colored spaces
+        even = False
+        odd = False
+        while even is False:
+            x = randint(0, 7)
+            if x % 2 == 0:
+                result[x] = bishop
+                even = True
+        while odd is False:
+            y = randint(0, 7)
+            if y % 2 == 1:
+                result[y] = bishop
+                odd = True
+        # Sets queen on 1 of 6 empty spaces
+        is_done = False
+        while is_done is False:
+            q = randint(0, 7)
+            if result[q] == '':
+                result[q] = queen
+                is_done = True
+        # Sets knights assume five and four possible squares, respectively
+        is_done = 0
+        while is_done < 2:
+            n = randint(0, 7)
+            if result[n] == '':
+                result[n] = knight
+                is_done += 1
+        # Sets king and rooks in available spaces
+        for i in range(1, len(result)-1):
+            if result[i] == '' and result[i + 1] == '' and result[i - 1] == '':
+                result[i - 1] = rook
+                result[i] = king
+                result[i + 1] = rook
+                complete = True
+    # Convert array to string
+    newString = ''
+    for i in result:
+        newString += i
+    return newString
+
+
+def chess960():
+    print("This is chess960")
+    top = '         \n' +\
+          '         \n'
+    white = ' '+piece_placement()+'\n'
+    middle = '         \n' +\
+             ' pppppppp\n' +\
+             ' ........\n' +\
+             ' ........\n' +\
+             ' ........\n' +\
+             ' ........\n' +\
+             ' PPPPPPPP\n'
+    black = ' '+white.upper()+'\n'
+    bottom = '         \n' +\
+             '         \n'
+    secondary = (top + white + middle + black + bottom)
+
+    pos = Position(secondary, 0, (True, True), (True, True), 0, 0)
+    # searcher = Searcher()
+    print_pos(pos)
+
+
 if __name__ == '__main__':
-    main()
+    # mode = int(input("1) Chess\n2) Chess960"))
+    # if mode == 1:
+    #     main()
+    # else:
+    chess960()
+
 
