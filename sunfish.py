@@ -552,11 +552,47 @@ def chess960():
         pos = pos.move(move)
 
 
+class TestStringMethods(unittest.TestCase):
+    def test_king_in_the_middle(self):
+        placement = piece_placement()
+        expected = 'rkr'
+        self.assertEqual(True, placement.__contains__(expected))
+
+    def test_mirror_placement(self):
+        # rkr
+        white = piece_placement()
+        # RKR
+        black = white.upper()
+        self.assertEqual(black, white.upper())
+
+    def test_bishops_on_opposite_colors(self):
+        placement = piece_placement()
+
+        bishop1 = placement.find('b')
+        bishop2 = placement.rfind('b')
+
+        self.assertNotEqual((bishop1 + bishop2) % 2, 0)
+
+    def test_bishop_on_even(self):
+        placement = piece_placement().split()
+
+        for i in range(0, len(placement)):
+            with self.subTest(i % 2 == 0 and placement[i] == 'b'):
+                self.assertEqual(i % 2, 0)
+
+    def test_bishop_on_odd(self):
+        placement = piece_placement().split()
+
+        for i in range(1, len(placement)):
+            with self.subTest(i % 2 == 1 and placement[i] == 'b'):
+                self.assertEqual(i % 2, 1)
+
 if __name__ == '__main__':
-    # mode = int(input("1) Chess\n2) Chess960"))
-    # if mode == 1:
-    #     main()
-    # else:
-    chess960()
+    mode = int(input("1) Chess\n2) Chess960"))
+    if mode == 1:
+        main()
+    else:
+        chess960()
+    # unittest.main()
 
 
